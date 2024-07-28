@@ -5,10 +5,8 @@ import static utilz.Constants.PlayerConstants.getSpriteAmount;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
-import javax.imageio.ImageIO;
+import utilz.LoadSave;
 
 public class Player extends Entity{	
 	private BufferedImage[][] animations;
@@ -17,12 +15,12 @@ public class Player extends Entity{
 	private boolean moving = false, running = false, attacking = false;
 	
 	private boolean left, up, right, down, shift;
-	private float playerSpeed = 2.0f;
-	private float runningSpeed = 3.0f;
+	private float playerSpeed = 1.0f;
+	private float runningSpeed = 1.5f;
 	
 	
-	public Player(float x, float y) {
-		super(x, y);
+	public Player(float x, float y, int width, int height) {
+		super(x, y, width, height);
 		loadAnimations();
 	}
 	
@@ -34,7 +32,7 @@ public class Player extends Entity{
 	}
 	
 	public void render(Graphics g) {		
-		g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, 256, 256, null);		
+		g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, width, height, null);		
 	}
 	
 	private void updateAnimationTick() {
@@ -107,25 +105,13 @@ public class Player extends Entity{
 	}
 	
 	private void loadAnimations() {
-		InputStream is = getClass().getResourceAsStream("/Samurai_Sprite.png");		
-		try {
-			BufferedImage img = ImageIO.read(is);
+			BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
 			
 			animations = new BufferedImage[10][12];		
 			for(int j = 0; j < animations.length; j++)
 			for(int i= 0; i < animations[j].length; i++) 
 				animations[j][i] = img.getSubimage(i*128, j*128, 128, 128);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	finally {
-			try {
-				is.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
+					
 	}
 	
 	public void resetDirBooleans() {
@@ -172,8 +158,5 @@ public class Player extends Entity{
 	}
 	public void setShift(boolean shift) {
 		this.shift = shift;
-	}
-	
-	
-	
+	}	
 }
