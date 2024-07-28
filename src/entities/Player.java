@@ -15,8 +15,10 @@ public class Player extends Entity{
 	private int aniTick, aniIndex, aniSpeed = 15;
 	private int playerAction = IDLE;
 	private boolean moving = false;
-	private boolean left, up, right, down;
+	private boolean running = false;
+	private boolean left, up, right, down, shift;
 	private float playerSpeed = 2.0f;
+	private float runningSpeed = 3.0f;
 	
 	
 	public Player(float x, float y) {
@@ -24,10 +26,11 @@ public class Player extends Entity{
 		loadAnimations();
 	}
 	
-	public void update() {		
+	public void update() {	
+		updatePos();
 		updateAnimationTick();
 		setAnimation();
-		updatePos();	
+			
 	}
 	
 	public void render(Graphics g) {		
@@ -50,6 +53,8 @@ public class Player extends Entity{
 		
 		if(moving)
 			playerAction = WALKING;
+		else if(running)
+			playerAction = RUNNING;
 		else
 			playerAction = IDLE;
 		
@@ -58,7 +63,8 @@ public class Player extends Entity{
 	private void updatePos() {
 		
 		moving = false;
-		
+		running  = false;
+		//Walking
 		if(left && !right) {
 			x -= playerSpeed;
 			moving = true;
@@ -74,6 +80,16 @@ public class Player extends Entity{
 			y += playerSpeed;
 			moving = true;
 		}
+		//Running
+		if(shift && left && !right) {
+			x -= runningSpeed;
+			moving = false;
+			running = true;
+		}else if(shift && right && !left) {
+			x += runningSpeed;
+			moving = false;
+			running = true;
+		}		
 		
 	}
 	
@@ -102,7 +118,6 @@ public class Player extends Entity{
 	public boolean isLeft() {
 		return left;
 	}
-
 	public void setLeft(boolean left) {
 		this.left = left;
 	}
@@ -110,7 +125,6 @@ public class Player extends Entity{
 	public boolean isUp() {
 		return up;
 	}
-
 	public void setUp(boolean up) {
 		this.up = up;
 	}
@@ -118,7 +132,6 @@ public class Player extends Entity{
 	public boolean isRight() {
 		return right;
 	}
-
 	public void setRight(boolean right) {
 		this.right = right;
 	}
@@ -126,9 +139,15 @@ public class Player extends Entity{
 	public boolean isDown() {
 		return down;
 	}
-
 	public void setDown(boolean down) {
 		this.down = down;
+	}
+	
+	public boolean isShift() {
+		return shift;
+	}
+	public void setShift(boolean shift) {
+		this.shift = shift;
 	}
 	
 	

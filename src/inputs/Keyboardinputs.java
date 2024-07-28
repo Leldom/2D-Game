@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import main.GamePanel;
-import static utilz.Constants.Directions.*;
 
 public class Keyboardinputs implements KeyListener {
 	
@@ -34,7 +33,10 @@ public class Keyboardinputs implements KeyListener {
 				break;	
 			case KeyEvent.VK_D:
 				gamePanel.getGame().getPlayer().setRight(false);
-				break;		
+				break;
+			case KeyEvent.VK_SHIFT:
+				gamePanel.getGame().getPlayer().setShift(false);
+				break;
 		}	
 	}
 
@@ -53,7 +55,10 @@ public class Keyboardinputs implements KeyListener {
 				break;	
 			case KeyEvent.VK_D:
 				gamePanel.getGame().getPlayer().setRight(true);
-				break;		
+				break;
+			case KeyEvent.VK_SHIFT:
+				gamePanel.getGame().getPlayer().setShift(true);
+				break;
 		}	
 	}
 }
