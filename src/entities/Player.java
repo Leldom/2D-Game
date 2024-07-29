@@ -2,10 +2,11 @@ package entities;
 
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.PlayerConstants.getSpriteAmount;
-
+import static utilz.HelpMethods.CanMoveHere;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import main.Game;
 import utilz.LoadSave;
 
 public class Player extends Entity{	
@@ -17,11 +18,15 @@ public class Player extends Entity{
 	private boolean left, up, right, down, shift;
 	private float playerSpeed = 1.0f;
 	private float runningSpeed = 1.5f;
+	private int[][] lvlData;
+	private float xDrawOffset = 37 * Game.SCALE;
+	private float yDrawOffset = 38 * Game.SCALE;
 	
 	
 	public Player(float x, float y, int width, int height) {
 		super(x, y, width, height);
 		loadAnimations();
+		initHitbox(x, y, 23 * Game.SCALE, 58 * Game.SCALE);
 	}
 	
 	public void update() {	
@@ -32,7 +37,8 @@ public class Player extends Entity{
 	}
 	
 	public void render(Graphics g) {		
-		g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, width, height, null);		
+		g.drawImage(animations[playerAction][aniIndex], (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);	
+		drawHitbox(g);
 	}
 	
 	private void updateAnimationTick() {
@@ -75,33 +81,37 @@ public class Player extends Entity{
 		
 		moving = false;
 		running  = false;
+		if(!left && !right && !up && !down)
+			return;
+		
+		float xSpeed = 0, ySpeed = 0;
+		
 		//Walking
-		if(left && !right) {
-			x -= playerSpeed;
-			moving = true;
-		}else if(right && !left) {
-			x += playerSpeed;
-			moving = true;
-		}
-		
-		if(up && !down) {
-			y -= playerSpeed;
-			moving = true;
-		}else if(down && !up) {
-			y += playerSpeed;
-			moving = true;
-		}
+		if(left && !right) 
+			xSpeed = -playerSpeed;			
+		else if(right && !left) 
+			xSpeed = playerSpeed;
+					
+		if(up && !down) 
+			ySpeed = -playerSpeed;			
+		else if(down && !up) 
+			ySpeed = playerSpeed;
+					
 		//Running
-		if(shift && left && !right) {
-			x -= runningSpeed;
-			moving = false;
-			running = true;
-		}else if(shift && right && !left) {
-			x += runningSpeed;
-			moving = false;
-			running = true;
-		}		
+		if(shift && left && !right)
+			xSpeed = -runningSpeed;			
+		else if(shift && right && !left) 
+			xSpeed = runningSpeed;
 		
+		if(CanMoveHere(hitbox.x + xSpeed, hitbox.y + ySpeed, hitbox.width, hitbox.height, lvlData)) {
+			hitbox.x +=xSpeed;
+			hitbox.y +=ySpeed;
+			moving = true;
+			if(shift)
+				moving = false;
+				running = true;
+		}
+	
 	}
 	
 	private void loadAnimations() {
@@ -112,6 +122,10 @@ public class Player extends Entity{
 			for(int i= 0; i < animations[j].length; i++) 
 				animations[j][i] = img.getSubimage(i*128, j*128, 128, 128);
 					
+	}
+	
+	public void loadLvlData(int[][] lvlData) {
+		this.lvlData = lvlData;
 	}
 	
 	public void resetDirBooleans() {
