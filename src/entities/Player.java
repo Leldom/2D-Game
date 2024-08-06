@@ -88,6 +88,9 @@ public class Player extends Entity{
 		
 		moving = false;
 		running  = false;
+		
+		if(jump)
+			jump();
 		if(!left && !right && !inAir)
 			return;
 		
@@ -129,6 +132,14 @@ public class Player extends Entity{
 		
 	}
 	
+	private void jump() {
+		if(inAir)
+			return;
+		inAir = true;
+		airSpeed = jumpSpeed;
+		
+	}
+
 	private void resetInAir() {
 		inAir = false;
 		airSpeed = 0;
