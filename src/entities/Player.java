@@ -33,7 +33,7 @@ public class Player extends Entity{
 	public Player(float x, float y, int width, int height) {
 		super(x, y, width, height);
 		loadAnimations();
-		initHitbox(x, y, 23 * Game.SCALE, 58 * Game.SCALE);
+		initHitbox(x, y, 23 * Game.SCALE, 57 * Game.SCALE);		
 	}
 	
 	public void update() {	
@@ -45,7 +45,7 @@ public class Player extends Entity{
 	
 	public void render(Graphics g) {		
 		g.drawImage(animations[playerAction][aniIndex], (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);	
-		drawHitbox(g);
+//		drawHitbox(g);
 	}
 	
 	private void updateAnimationTick() {
@@ -71,6 +71,9 @@ public class Player extends Entity{
 		else
 			playerAction = IDLE;
 		
+		if(inAir) 		
+				playerAction = JUMP;
+				
 		if(attacking)
 			playerAction = ATTACK_1;
 		
@@ -100,13 +103,19 @@ public class Player extends Entity{
 		if(left) 
 			xSpeed -= playerSpeed;			
 		if(right) 
-			xSpeed += playerSpeed;
+			xSpeed += playerSpeed;	
 					
 		//Running
 		if(shift && left)
 			xSpeed -= runningSpeed;			
 		else if(shift && right) 
 			xSpeed += runningSpeed;
+		
+		if(!inAir)
+			if(!IsEntityOnFloor(hitbox, lvlData)) 
+				inAir = true;
+			
+		
 		
 		if(inAir) {
 			if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
@@ -166,6 +175,8 @@ public class Player extends Entity{
 	
 	public void loadLvlData(int[][] lvlData) {
 		this.lvlData = lvlData;
+		if(!IsEntityOnFloor(hitbox, lvlData))
+			inAir = true;
 	}
 	
 	public void resetDirBooleans() {
@@ -212,5 +223,8 @@ public class Player extends Entity{
 	}
 	public void setShift(boolean shift) {
 		this.shift = shift;
-	}	
+	}
+	public void setJump(boolean jump) {
+		this.jump = jump;
+	}
 }
