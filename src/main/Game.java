@@ -2,9 +2,9 @@ package main;
 
 import java.awt.Graphics;
 
-import entities.Player;
 import gamesates.Gamestate;
-import levels.LevelHandler;
+import gamesates.Menu;
+import gamesates.Playing;
 
 public class Game implements Runnable{
 
@@ -13,8 +13,9 @@ public class Game implements Runnable{
 	private Thread gameThread;
 	private final int FPS_SET = 120;
 	private final int UPS_SET = 200;	
-	private Player player;
-	private LevelHandler levelHandler;
+
+	private Playing playing;
+	private Menu menu;
 	
 	public final static int TILES_DEFAULT_SIZE = 32;
 	public final static float SCALE = 2.0f;
@@ -35,9 +36,8 @@ public class Game implements Runnable{
 	}
 
 	private void initClasses() {
-		levelHandler = new LevelHandler(this);
-		player = new Player(200, 200, (int)(96*SCALE), (int) (96*SCALE));	
-		player.loadLvlData(levelHandler.getCurrentLevel().getLevelData());
+		menu = new Menu(this);
+		playing = new Playing(this);
 	}
 
 	private void startGameLoop() {
@@ -49,11 +49,10 @@ public class Game implements Runnable{
 			
 		switch(Gamestate.state) {
 		case MENU:
-			
+			menu.update();
 			break;
 		case PLAYING:
-			levelHandler.update();
-			player.update();			
+			playing.update();		
 			break;
 		default:
 			break;		
@@ -64,11 +63,10 @@ public class Game implements Runnable{
 		
 		switch(Gamestate.state) {
 		case MENU:
-			
+			menu.draw(g);
 			break;
 		case PLAYING:
-			levelHandler.draw(g);
-			player.render(g);			
+			playing.draw(g);	
 			break;
 		default:
 			break;		
@@ -119,11 +117,14 @@ public class Game implements Runnable{
 	}
 	
 	public void windowFocusLost() {
-		player.resetDirBooleans();
+		if(Gamestate.state == Gamestate.PLAYING)
+			playing.getPlayer().resetDirBooleans();
 	}
-	
-	public Player getPlayer() {
-		return player;
+	public Menu getMenu(){
+		return menu;
+	}
+	public Playing getPlaying(){
+		return playing;
 	}
 	
 }
