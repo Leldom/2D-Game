@@ -1,5 +1,5 @@
 This game is created with a turorial by https://www.youtube.com/@KaarinGaming
-I'm just trying to implement my own stuff and characters :)
+I'm just trying to implement my own functions and characters etc. :)
 
 Original code here: https://github.com/KaarinGaming
 
